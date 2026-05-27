@@ -7,150 +7,94 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:        #f7f6f3;
-    --surface:   #ffffff;
-    --border:    #e4e2db;
-    --border-md: #ccc9bf;
-    --text:      #1a1916;
-    --muted:     #7a7870;
-    --hint:      #b0ae a6;
-    --accent:    #2d6a4f;
-    --accent-bg: #e8f5ee;
-    --warn:      #92400e;
-    --warn-bg:   #fef3c7;
-    --danger:    #991b1b;
-    --danger-bg: #fee2e2;
-    --blue:      #1e40af;
-    --blue-bg:   #eff6ff;
-    --font:      'DM Sans', sans-serif;
-    --mono:      'DM Mono', monospace;
-    --radius:    8px;
-    --radius-lg: 12px;
+    --bg:#f7f6f3; --surface:#ffffff; --border:#e4e2db; --border-md:#ccc9bf;
+    --text:#1a1916; --muted:#7a7870; --accent:#2d6a4f; --accent-bg:#e8f5ee;
+    --warn:#92400e; --warn-bg:#fef3c7; --danger:#991b1b; --danger-bg:#fee2e2;
+    --blue:#1e40af; --blue-bg:#eff6ff;
+    --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+    --radius:8px; --radius-lg:12px;
   }
-
-  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; min-height: 100vh; }
-
-  .page { max-width: 780px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-
-  header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap; }
-  .header-left h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
-  .header-left p  { font-size: 13px; color: var(--muted); margin-top: 3px; }
-  .header-right   { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
-  input[type=text], input[type=number], input[type=date] {
-    font-family: var(--font); font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 7px 11px; background: var(--surface); color: var(--text); outline: none; transition: border 0.15s;
+  body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; min-height:100vh; }
+  .page { max-width:780px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2rem; gap:1rem; flex-wrap:wrap; }
+  .header-left h1 { font-size:22px; font-weight:600; letter-spacing:-0.3px; }
+  .header-left p { font-size:13px; color:var(--muted); margin-top:3px; }
+  .header-right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type=text],input[type=number],input[type=date] {
+    font-family:var(--font); font-size:14px; border:1px solid var(--border); border-radius:var(--radius);
+    padding:7px 11px; background:var(--surface); color:var(--text); outline:none; transition:border 0.15s;
   }
-  input:focus { border-color: var(--border-md); }
-
+  input:focus { border-color:var(--border-md); }
   button {
-    font-family: var(--font); font-size: 13px; font-weight: 500; border-radius: var(--radius);
-    border: 1px solid var(--border); background: var(--surface); color: var(--text);
-    padding: 7px 14px; cursor: pointer; transition: background 0.12s, border 0.12s;
+    font-family:var(--font); font-size:13px; font-weight:500; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); color:var(--text);
+    padding:7px 14px; cursor:pointer; transition:background 0.12s,border 0.12s;
   }
-  button:hover { background: var(--bg); border-color: var(--border-md); }
-  button:active { transform: scale(0.98); }
-
-  .btn-primary { background: var(--text); color: #fff; border-color: var(--text); }
-  .btn-primary:hover { background: #333; border-color: #333; }
-
-  .btn-edit { border-color: #d97706; color: var(--warn); }
-  .btn-edit:hover { background: var(--warn-bg); }
-
-  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
-  .tab { font-size: 13px; padding: 5px 13px; border-radius: 20px; }
-  .tab.active { background: var(--text); color: #fff; border-color: var(--text); }
-
-  .banner { font-size: 13px; padding: 9px 13px; border-radius: var(--radius); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-  .banner-edit    { background: var(--warn-bg);  color: var(--warn);   border: 1px solid #fcd34d; }
-  .banner-success { background: var(--accent-bg); color: var(--accent); border: 1px solid #a7d7bc; }
-  .banner-info    { background: var(--blue-bg);  color: var(--blue);   border: 1px solid #bfdbfe; }
-  .banner-error   { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
-  thead th { font-size: 12px; font-weight: 500; color: var(--muted); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); background: #faf9f7; }
-  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: #faf9f7; }
-
-  .badge { display: inline-block; font-size: 12px; font-weight: 500; font-family: var(--mono); padding: 2px 9px; border-radius: 6px; min-width: 36px; text-align: center; }
-  .badge-ok   { background: #d1fae5; color: #065f46; }
-  .badge-low  { background: var(--warn-bg); color: var(--warn); }
-  .badge-zero { background: var(--danger-bg); color: var(--danger); }
-
-  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
-  .dot-ok   { background: #10b981; }
-  .dot-low  { background: #f59e0b; }
-  .dot-zero { background: #ef4444; }
-
-  .qty-input { width: 70px; padding: 4px 8px; font-size: 13px; font-family: var(--mono); text-align: center; }
-
-  .btn-co { font-size: 12px; padding: 4px 11px; color: var(--blue); border-color: #93c5fd; }
-  .btn-co:hover { background: var(--blue-bg); }
-
-  .save-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
-
-  /* Modal */
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
-  .overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.75rem; width: 100%; max-width: 360px; }
-  .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; }
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
-  .field input { width: 100%; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.25rem; }
-
-  /* Log */
-  .log-section { margin-top: 1.5rem; }
-  .log-toggle { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; background: none; border: none; padding: 0; font-family: var(--font); }
-  .log-toggle:hover { color: var(--text); background: none; }
-  .log-list { margin-top: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .log-entry { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .log-entry:last-child { border-bottom: none; }
-  .log-who  { font-weight: 600; }
-  .log-item { color: var(--muted); }
-  .log-note { color: #aaa; font-size: 12px; }
-  .log-date { margin-left: auto; font-size: 11px; color: #bbb; font-family: var(--mono); white-space: nowrap; }
-
-  /* Spinner */
-  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: -3px; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 14px; }
-
-  /* Config prompt */
-  .config-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; text-align: center; }
-  .config-box h2 { font-size: 18px; font-weight: 600; margin-bottom: 0.5rem; }
-  .config-box p  { font-size: 14px; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.6; }
-  .config-box input { width: 100%; max-width: 480px; margin-bottom: 12px; font-size: 13px; font-family: var(--mono); }
-
-  @media (max-width: 520px) {
-    header { flex-direction: column; }
-    table, thead, tbody, th, td, tr { display: block; }
-    thead { display: none; }
-    tbody td { padding: 6px 12px; border: none; }
-    tbody td::before { content: attr(data-label); font-size: 11px; color: var(--muted); display: block; margin-bottom: 2px; }
-    tbody tr { border-bottom: 1px solid var(--border); padding: 8px 0; }
+  button:hover { background:var(--bg); border-color:var(--border-md); }
+  button:active { transform:scale(0.98); }
+  .btn-primary { background:var(--text); color:#fff; border-color:var(--text); }
+  .btn-primary:hover { background:#333; border-color:#333; }
+  .btn-edit { border-color:#d97706; color:var(--warn); }
+  .btn-edit:hover { background:var(--warn-bg); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1rem; }
+  .tab { font-size:13px; padding:5px 13px; border-radius:20px; }
+  .tab.active { background:var(--text); color:#fff; border-color:var(--text); }
+  .banner { font-size:13px; padding:9px 13px; border-radius:var(--radius); margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+  .banner-edit { background:var(--warn-bg); color:var(--warn); border:1px solid #fcd34d; }
+  .banner-success { background:var(--accent-bg); color:var(--accent); border:1px solid #a7d7bc; }
+  .banner-info { background:var(--blue-bg); color:var(--blue); border:1px solid #bfdbfe; }
+  .banner-error { background:var(--danger-bg); color:var(--danger); border:1px solid #fca5a5; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:14px; table-layout:fixed; }
+  thead th { font-size:12px; font-weight:500; color:var(--muted); text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); background:#faf9f7; }
+  tbody td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:#faf9f7; }
+  .badge { display:inline-block; font-size:12px; font-weight:500; font-family:var(--mono); padding:2px 9px; border-radius:6px; min-width:36px; text-align:center; }
+  .badge-ok { background:#d1fae5; color:#065f46; }
+  .badge-low { background:var(--warn-bg); color:var(--warn); }
+  .badge-zero { background:var(--danger-bg); color:var(--danger); }
+  .dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .dot-ok { background:#10b981; }
+  .dot-low { background:#f59e0b; }
+  .dot-zero { background:#ef4444; }
+  .qty-input { width:70px; padding:4px 8px; font-size:13px; font-family:var(--mono); text-align:center; }
+  .btn-co { font-size:12px; padding:4px 11px; color:var(--blue); border-color:#93c5fd; }
+  .btn-co:hover { background:var(--blue-bg); }
+  .save-row { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--surface); border-radius:var(--radius-lg); border:1px solid var(--border); padding:1.75rem; width:100%; max-width:360px; }
+  .modal h3 { font-size:16px; font-weight:600; margin-bottom:1.25rem; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:500; text-transform:uppercase; letter-spacing:0.4px; }
+  .field input { width:100%; }
+  .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:1.25rem; }
+  .log-section { margin-top:1.5rem; }
+  .log-toggle { font-size:13px; color:var(--muted); cursor:pointer; text-decoration:underline; text-underline-offset:3px; background:none; border:none; padding:0; font-family:var(--font); }
+  .log-toggle:hover { color:var(--text); background:none; }
+  .log-entry { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:9px 14px; border-bottom:1px solid var(--border); font-size:13px; }
+  .log-entry:last-child { border-bottom:none; }
+  .log-who { font-weight:600; }
+  .log-item { color:var(--muted); }
+  .log-note { color:#aaa; font-size:12px; }
+  .log-date { margin-left:auto; font-size:11px; color:#bbb; font-family:var(--mono); white-space:nowrap; }
+  .spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--text); border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:-3px; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .empty { padding:2rem; text-align:center; color:var(--muted); font-size:14px; }
+  @media (max-width:520px) {
+    header { flex-direction:column; }
+    table,thead,tbody,th,td,tr { display:block; }
+    thead { display:none; }
+    tbody td { padding:6px 12px; border:none; }
+    tbody td::before { content:attr(data-label); font-size:11px; color:var(--muted); display:block; margin-bottom:2px; }
+    tbody tr { border-bottom:1px solid var(--border); padding:8px 0; }
   }
 </style>
 </head>
 <body>
 <div class="page">
-
-  <div id="config-screen" style="display:none;">
-    <div class="config-box">
-      <h2>Connect to Google Sheet</h2>
-      <p>Paste your Apps Script Web App URL below.<br>You only need to do this once — it will be saved in your browser.</p>
-      <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/…/exec">
-      <br>
-      <button class="btn-primary" onclick="saveScriptUrl()">Connect</button>
-    </div>
-  </div>
-
   <div id="main-screen" style="display:none;">
     <header>
       <div class="header-left">
@@ -162,14 +106,11 @@
         <button class="btn-edit" id="edit-btn" onclick="toggleEdit()">✏️ Edit stock</button>
       </div>
     </header>
-
-    <div id="banner-edit"    class="banner banner-edit"    style="display:none;">✏️ Edit mode — update quantities, then save.</div>
+    <div id="banner-edit" class="banner banner-edit" style="display:none;">✏️ Edit mode — update quantities, then save.</div>
     <div id="banner-success" class="banner banner-success" style="display:none;">✓ Stock counts saved to Google Sheet.</div>
-    <div id="banner-error"   class="banner banner-error"   style="display:none;"></div>
-    <div id="banner-loading" class="banner banner-info"    style="display:none;"><span class="spinner"></span> <span id="loading-msg">Loading…</span></div>
-
+    <div id="banner-error" class="banner banner-error" style="display:none;"></div>
+    <div id="banner-loading" class="banner banner-info" style="display:none;"><span class="spinner"></span><span id="loading-msg">Loading…</span></div>
     <div class="tabs" id="tabs"></div>
-
     <div class="card">
       <table>
         <thead>
@@ -183,24 +124,20 @@
         <tbody id="inv-body"></tbody>
       </table>
     </div>
-
     <div id="save-row" class="save-row" style="display:none;">
       <button onclick="cancelEdit()">Cancel</button>
       <button class="btn-primary" onclick="saveEdits()">💾 Save stock counts</button>
     </div>
-
     <div class="log-section">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
         <button class="log-toggle" id="log-toggle" onclick="toggleLog()">Show checkout log</button>
-        <span id="bottom-hint" style="font-size:12px; color:var(--muted);">Click "Check out" to log a checkout</span>
+        <span id="bottom-hint" style="font-size:12px;color:var(--muted);">Click "Check out" to log a checkout</span>
       </div>
       <div id="log-list" style="display:none;"></div>
     </div>
   </div>
-
 </div>
 
-<!-- Checkout Modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modal-title">Check out</h3>
@@ -216,119 +153,69 @@
 </div>
 
 <script>
-const SCRIPT_URL_KEY = 'inv_script_url';
-let SCRIPT_URL = '';
-let items = [];
-let log = [];
-let activeCategory = 'All';
-let editMode = false;
-let logVisible = false;
-let checkingOutId = null;
-
-// ── Init ──────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbkeWlXw1QFEi_L3dqxxTzyMPa7WEMHoqly_mDbsQRvCntabD8KGyQYTQfUzs0BLA/exec';
+let items=[], log=[], activeCategory='All', editMode=false, logVisible=false, checkingOutId=null;
 
 function init() {
-  SCRIPT_URL = localStorage.getItem(SCRIPT_URL_KEY) || '';
-  if (!SCRIPT_URL) {
-    document.getElementById('config-screen').style.display = 'block';
-  } else {
-    document.getElementById('main-screen').style.display = 'block';
-    loadData();
-  }
-}
-
-function saveScriptUrl() {
-  const val = document.getElementById('script-url-input').value.trim();
-  if (!val.startsWith('https://script.google.com')) {
-    alert('Please paste a valid Apps Script URL.'); return;
-  }
-  localStorage.setItem(SCRIPT_URL_KEY, val);
-  SCRIPT_URL = val;
-  document.getElementById('config-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'block';
+  document.getElementById('main-screen').style.display='block';
   loadData();
 }
 
-// ── API ───────────────────────────────────────────────────────
-
 async function api(params) {
-  const url = SCRIPT_URL + '?' + new URLSearchParams(params);
-  const res = await fetch(url);
+  const res = await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));
   return res.json();
 }
-
 async function apiPost(body) {
-  const res = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
+  const res = await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});
   return res.json();
 }
 
 async function loadData() {
-  showBanner('loading', 'Loading inventory…');
+  showBanner('loading','Loading inventory…');
   try {
-    const [itemsRes, logRes] = await Promise.all([
-      api({ action: 'getItems' }),
-      api({ action: 'getLog' }),
-    ]);
-    items = itemsRes.items || [];
-    log   = logRes.log   || [];
+    const [ir,lr] = await Promise.all([api({action:'getItems'}),api({action:'getLog'})]);
+    items=ir.items||[]; log=lr.log||[];
     hideBanner('loading');
-    document.getElementById('last-updated').textContent =
-      'Last refreshed ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    buildTabs();
-    render();
-    if (logVisible) renderLog();
-  } catch (e) {
+    document.getElementById('last-updated').textContent='Last refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    buildTabs(); render();
+    if(logVisible) renderLog();
+  } catch(e) {
     hideBanner('loading');
-    showBanner('error', 'Could not load data. Check your script URL and try refreshing.');
+    showBanner('error','Could not load data. Check your script URL and try refreshing.');
   }
 }
 
-// ── UI helpers ────────────────────────────────────────────────
-
-function showBanner(name, msg) {
-  const el = document.getElementById('banner-' + name);
-  if (msg) el.innerHTML = (name === 'loading' ? '<span class="spinner"></span>' : '') + msg;
-  el.style.display = 'flex';
+function showBanner(name,msg) {
+  const el=document.getElementById('banner-'+name);
+  if(msg) el.innerHTML=(name==='loading'?'<span class="spinner"></span>':'')+msg;
+  el.style.display='flex';
 }
-function hideBanner(name) { document.getElementById('banner-' + name).style.display = 'none'; }
+function hideBanner(name){document.getElementById('banner-'+name).style.display='none';}
 
 function buildTabs() {
-  const cats = ['All', ...new Set(items.map(i => i.cat))];
-  document.getElementById('tabs').innerHTML = cats.map(c =>
+  const cats=['All',...new Set(items.map(i=>i.cat))];
+  document.getElementById('tabs').innerHTML=cats.map(c=>
     `<button class="tab${c===activeCategory?' active':''}" onclick="setTab('${c}')">${c}</button>`
   ).join('');
 }
-
-function setTab(c) { activeCategory = c; buildTabs(); render(); }
+function setTab(c){activeCategory=c;buildTabs();render();}
 
 function getLastCheckout(id) {
-  const e = log.find(l => l.itemId == id || l.itemName == items.find(i=>i.id==id)?.name);
-  if (!e) return '—';
+  const e=log.find(l=>l.itemName==items.find(i=>i.id==id)?.name);
+  if(!e) return '—';
   return `${e.who}, ${e.date}, ×${e.qty}`;
 }
 
 function render() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const filtered = items.filter(i =>
-    (activeCategory === 'All' || i.cat === activeCategory) &&
-    (!q || i.name.toLowerCase().includes(q))
-  );
-  const tbody = document.getElementById('inv-body');
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty">No items found.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = filtered.map(item => {
-    const bc = item.qty == 0 ? 'badge-zero' : item.qty <= 5 ? 'badge-low' : 'badge-ok';
-    const dc = item.qty == 0 ? 'dot-zero'  : item.qty <= 5 ? 'dot-low'  : 'dot-ok';
-    const qtyCell = editMode
-      ? `<input class="qty-input" type="number" min="0" value="${item.qty}" data-id="${item.id}">`
-      : `<span class="badge ${bc}">${item.qty}</span>`;
-    const actionCell = editMode ? '' :
-      `<button class="btn-co" onclick="openModal(${item.id})">Check out</button>`;
+  const q=document.getElementById('search').value.toLowerCase();
+  const filtered=items.filter(i=>(activeCategory==='All'||i.cat===activeCategory)&&(!q||i.name.toLowerCase().includes(q)));
+  const tbody=document.getElementById('inv-body');
+  if(!filtered.length){tbody.innerHTML=`<tr><td colspan="4" class="empty">No items found.</td></tr>`;return;}
+  tbody.innerHTML=filtered.map(item=>{
+    const bc=item.qty==0?'badge-zero':item.qty<=5?'badge-low':'badge-ok';
+    const dc=item.qty==0?'dot-zero':item.qty<=5?'dot-low':'dot-ok';
+    const qtyCell=editMode?`<input class="qty-input" type="number" min="0" value="${item.qty}" data-id="${item.id}">`:`<span class="badge ${bc}">${item.qty}</span>`;
+    const actionCell=editMode?'':`<button class="btn-co" onclick="openModal(${item.id})">Check out</button>`;
     return `<tr>
       <td data-label="Item"><span class="dot ${dc}"></span>${item.name}</td>
       <td data-label="In office">${qtyCell}</td>
@@ -338,120 +225,95 @@ function render() {
   }).join('');
 }
 
-// ── Edit mode ─────────────────────────────────────────────────
-
 function toggleEdit() {
-  editMode = true;
-  showBanner('edit', '✏️ Edit mode — update quantities, then save.');
+  editMode=true;
+  showBanner('edit','✏️ Edit mode — update quantities, then save.');
   hideBanner('success');
-  document.getElementById('save-row').style.display = 'flex';
-  document.getElementById('edit-btn').style.display = 'none';
-  document.getElementById('bottom-hint').style.display = 'none';
+  document.getElementById('save-row').style.display='flex';
+  document.getElementById('edit-btn').style.display='none';
+  document.getElementById('bottom-hint').style.display='none';
   render();
 }
-
 function cancelEdit() {
-  editMode = false;
-  hideBanner('edit');
-  document.getElementById('save-row').style.display = 'none';
-  document.getElementById('edit-btn').style.display = '';
-  document.getElementById('bottom-hint').style.display = '';
+  editMode=false; hideBanner('edit');
+  document.getElementById('save-row').style.display='none';
+  document.getElementById('edit-btn').style.display='';
+  document.getElementById('bottom-hint').style.display='';
   render();
 }
-
 async function saveEdits() {
-  const updates = [];
-  document.querySelectorAll('.qty-input').forEach(input => {
-    updates.push({ id: parseInt(input.dataset.id), qty: Math.max(0, parseInt(input.value) || 0) });
+  const updates=[];
+  document.querySelectorAll('.qty-input').forEach(input=>{
+    updates.push({id:parseInt(input.dataset.id),qty:Math.max(0,parseInt(input.value)||0)});
   });
-  updates.forEach(u => {
-    const item = items.find(i => i.id == u.id);
-    if (item) item.qty = u.qty;
-  });
+  updates.forEach(u=>{const item=items.find(i=>i.id==u.id);if(item)item.qty=u.qty;});
   cancelEdit();
-  showBanner('loading', 'Saving to Google Sheet…');
+  showBanner('loading','Saving to Google Sheet…');
   try {
-    await apiPost({ action: 'updateStock', updates });
+    await apiPost({action:'updateStock',updates});
     hideBanner('loading');
-    showBanner('success', '✓ Stock counts saved to Google Sheet.');
-    setTimeout(() => hideBanner('success'), 4000);
+    showBanner('success','✓ Stock counts saved to Google Sheet.');
+    setTimeout(()=>hideBanner('success'),4000);
     render();
-  } catch (e) {
+  } catch(e) {
     hideBanner('loading');
-    showBanner('error', 'Save failed. Check your connection and try again.');
+    showBanner('error','Save failed. Check your connection and try again.');
   }
 }
-
-// ── Checkout modal ────────────────────────────────────────────
 
 function openModal(id) {
-  checkingOutId = id;
-  const item = items.find(i => i.id == id);
-  document.getElementById('modal-title').textContent = `Check out: ${item.name}`;
-  document.getElementById('m-who').value = '';
-  document.getElementById('m-qty').value = 1;
-  document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('m-note').value = '';
+  checkingOutId=id;
+  const item=items.find(i=>i.id==id);
+  document.getElementById('modal-title').textContent=`Check out: ${item.name}`;
+  document.getElementById('m-who').value='';
+  document.getElementById('m-qty').value=1;
+  document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('m-note').value='';
   document.getElementById('overlay').classList.add('open');
 }
-
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  checkingOutId = null;
-}
+function closeModal(){document.getElementById('overlay').classList.remove('open');checkingOutId=null;}
 
 async function confirmCheckout() {
-  const who  = document.getElementById('m-who').value.trim();
-  const qty  = parseInt(document.getElementById('m-qty').value);
-  const date = document.getElementById('m-date').value;
-  const note = document.getElementById('m-note').value.trim();
-  if (!who || !qty || qty < 1 || !date) { alert('Please fill in name, quantity and date.'); return; }
-  const item = items.find(i => i.id == checkingOutId);
-  item.qty = Math.max(0, item.qty - qty);
-  log.unshift({ itemName: item.name, who, qty, date, note, ts: new Date().toISOString() });
-  closeModal();
-  render();
-  if (logVisible) renderLog();
-  showBanner('loading', 'Saving checkout…');
+  const who=document.getElementById('m-who').value.trim();
+  const qty=parseInt(document.getElementById('m-qty').value);
+  const date=document.getElementById('m-date').value;
+  const note=document.getElementById('m-note').value.trim();
+  if(!who||!qty||qty<1||!date){alert('Please fill in name, quantity and date.');return;}
+  const item=items.find(i=>i.id==checkingOutId);
+  item.qty=Math.max(0,item.qty-qty);
+  log.unshift({itemName:item.name,who,qty,date,note,ts:new Date().toISOString()});
+  closeModal(); render();
+  if(logVisible) renderLog();
+  showBanner('loading','Saving checkout…');
   try {
-    await apiPost({ action: 'checkout', itemId: item.id, itemName: item.name, who, qty, date, note });
+    await apiPost({action:'checkout',itemId:item.id,itemName:item.name,who,qty,date,note});
     hideBanner('loading');
-  } catch (e) {
+  } catch(e) {
     hideBanner('loading');
-    showBanner('error', 'Checkout saved locally but failed to sync. Refresh to retry.');
+    showBanner('error','Checkout saved locally but failed to sync. Refresh to retry.');
   }
 }
-
-// ── Checkout log ──────────────────────────────────────────────
 
 function toggleLog() {
-  logVisible = !logVisible;
-  document.getElementById('log-toggle').textContent = logVisible ? 'Hide checkout log' : 'Show checkout log';
-  document.getElementById('log-list').style.display = logVisible ? 'block' : 'none';
-  if (logVisible) renderLog();
+  logVisible=!logVisible;
+  document.getElementById('log-toggle').textContent=logVisible?'Hide checkout log':'Show checkout log';
+  document.getElementById('log-list').style.display=logVisible?'block':'none';
+  if(logVisible) renderLog();
 }
-
 function renderLog() {
-  const el = document.getElementById('log-list');
-  if (!log.length) {
-    el.innerHTML = `<div class="log-list"><div class="empty">No checkouts recorded yet.</div></div>`;
-    return;
-  }
-  el.innerHTML = `<div class="log-list card" style="margin-top:8px;">${
-    log.map(e => `<div class="log-entry">
+  const el=document.getElementById('log-list');
+  if(!log.length){el.innerHTML=`<div class="empty">No checkouts recorded yet.</div>`;return;}
+  el.innerHTML=`<div class="card" style="margin-top:8px;">${
+    log.map(e=>`<div class="log-entry">
       <span class="log-who">${e.who}</span>
       <span class="log-item">took ×${e.qty} ${e.itemName}</span>
-      ${e.note ? `<span class="log-note">– ${e.note}</span>` : ''}
+      ${e.note?`<span class="log-note">– ${e.note}</span>`:''}
       <span class="log-date">${e.date}</span>
     </div>`).join('')
   }</div>`;
 }
 
-// ── Close modal on overlay click ──────────────────────────────
-document.getElementById('overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 init();
 </script>
 </body>
