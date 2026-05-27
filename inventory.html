@@ -1,178 +1,390 @@
-// ============================================================
-//  INVENTORY TRACKER — Google Apps Script Backend
-//  Paste this entire file into Apps Script, then deploy as
-//  a Web App (see setup instructions).
-// ============================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#f7f6f3; --surface:#ffffff; --border:#e4e2db; --border-md:#ccc9bf;
+    --text:#1a1916; --muted:#7a7870; --accent:#2d6a4f; --accent-bg:#e8f5ee;
+    --warn:#92400e; --warn-bg:#fef3c7; --danger:#991b1b; --danger-bg:#fee2e2;
+    --blue:#1e40af; --blue-bg:#eff6ff; --green:#065f46; --green-bg:#d1fae5;
+    --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+    --radius:8px; --radius-lg:12px;
+  }
+  body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; min-height:100vh; }
+  .page { max-width:820px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.5rem; gap:1rem; flex-wrap:wrap; }
+  .header-left h1 { font-size:22px; font-weight:600; letter-spacing:-0.3px; }
+  .header-left p { font-size:13px; color:var(--muted); margin-top:3px; }
+  .header-right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type=text],input[type=number],input[type=date] {
+    font-family:var(--font); font-size:14px; border:1px solid var(--border); border-radius:var(--radius);
+    padding:7px 11px; background:var(--surface); color:var(--text); outline:none; transition:border 0.15s;
+  }
+  input:focus { border-color:var(--border-md); }
+  button {
+    font-family:var(--font); font-size:13px; font-weight:500; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); color:var(--text);
+    padding:7px 14px; cursor:pointer; transition:background 0.12s,border 0.12s;
+  }
+  button:hover { background:var(--bg); border-color:var(--border-md); }
+  button:active { transform:scale(0.98); }
+  .btn-primary { background:var(--text); color:#fff; border-color:var(--text); }
+  .btn-primary:hover { background:#333; border-color:#333; }
+  .btn-edit { border-color:#d97706; color:var(--warn); }
+  .btn-edit:hover { background:var(--warn-bg); }
+  .btn-undo-top { border-color:#d97706; color:var(--warn); display:none; }
+  .btn-undo-top:hover { background:var(--warn-bg); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1rem; }
+  .tab { font-size:13px; padding:5px 13px; border-radius:20px; }
+  .tab.active { background:var(--text); color:#fff; border-color:var(--text); }
+  .banner { font-size:13px; padding:9px 13px; border-radius:var(--radius); margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+  .banner-edit    { background:var(--warn-bg);  color:var(--warn);   border:1px solid #fcd34d; }
+  .banner-success { background:var(--accent-bg); color:var(--accent); border:1px solid #a7d7bc; }
+  .banner-info    { background:var(--blue-bg);  color:var(--blue);   border:1px solid #bfdbfe; }
+  .banner-error   { background:var(--danger-bg); color:var(--danger); border:1px solid #fca5a5; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:14px; table-layout:fixed; }
+  thead th { font-size:12px; font-weight:500; color:var(--muted); text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); background:#faf9f7; }
+  tbody td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:#faf9f7; }
+  .badge { display:inline-block; font-size:12px; font-weight:500; font-family:var(--mono); padding:2px 9px; border-radius:6px; min-width:36px; text-align:center; }
+  .badge-ok   { background:#d1fae5; color:#065f46; }
+  .badge-low  { background:var(--warn-bg); color:var(--warn); }
+  .badge-zero { background:var(--danger-bg); color:var(--danger); }
+  .dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .dot-ok   { background:#10b981; }
+  .dot-low  { background:#f59e0b; }
+  .dot-zero { background:#ef4444; }
+  .qty-input { width:70px; padding:4px 8px; font-size:13px; font-family:var(--mono); text-align:center; }
+  .btn-co  { font-size:12px; padding:4px 10px; color:var(--blue); border-color:#93c5fd; }
+  .btn-co:hover  { background:var(--blue-bg); }
+  .btn-ret { font-size:12px; padding:4px 10px; color:var(--green); border-color:#6ee7b7; }
+  .btn-ret:hover { background:var(--green-bg); }
+  .action-cell { display:flex; gap:5px; justify-content:flex-end; }
+  .save-row { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--surface); border-radius:var(--radius-lg); border:1px solid var(--border); padding:1.75rem; width:100%; max-width:360px; }
+  .modal h3 { font-size:16px; font-weight:600; margin-bottom:1.25rem; }
+  .modal-type-badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; margin-left:8px; vertical-align:middle; }
+  .badge-checkout { background:var(--blue-bg); color:var(--blue); }
+  .badge-return   { background:var(--green-bg); color:var(--green); }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:500; text-transform:uppercase; letter-spacing:0.4px; }
+  .field input { width:100%; }
+  .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:1.25rem; }
+  .log-section { margin-top:1.5rem; }
+  .log-toggle { font-size:13px; color:var(--muted); cursor:pointer; text-decoration:underline; text-underline-offset:3px; background:none; border:none; padding:0; font-family:var(--font); }
+  .log-toggle:hover { color:var(--text); background:none; }
+  .log-list { margin-top:1rem; border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .log-entry { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:9px 14px; border-bottom:1px solid var(--border); font-size:13px; }
+  .log-entry:last-child { border-bottom:none; }
+  .log-who  { font-weight:600; }
+  .log-item { color:var(--muted); }
+  .log-note { color:#aaa; font-size:12px; }
+  .log-date { margin-left:auto; font-size:11px; color:#bbb; font-family:var(--mono); white-space:nowrap; }
+  .log-type { font-size:10px; font-weight:600; padding:1px 6px; border-radius:10px; }
+  .log-type-out { background:var(--blue-bg); color:var(--blue); }
+  .log-type-in  { background:var(--green-bg); color:var(--green); }
+  .spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--text); border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:-3px; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .empty { padding:2rem; text-align:center; color:var(--muted); font-size:14px; }
+  @media (max-width:520px) {
+    header { flex-direction:column; }
+    table,thead,tbody,th,td,tr { display:block; }
+    thead { display:none; }
+    tbody td { padding:6px 12px; border:none; }
+    tbody td::before { content:attr(data-label); font-size:11px; color:var(--muted); display:block; margin-bottom:2px; }
+    tbody tr { border-bottom:1px solid var(--border); padding:8px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="main-screen" style="display:none;">
+    <header>
+      <div class="header-left">
+        <h1>Inventory tracker</h1>
+        <p id="last-updated">Loading…</p>
+      </div>
+      <div class="header-right">
+        <input type="text" id="search" placeholder="Search items…" style="width:150px" oninput="render()">
+        <button class="btn-undo-top" id="undo-top-btn" onclick="undoAction()">↩ Undo</button>
+        <button class="btn-edit" id="edit-btn" onclick="toggleEdit()">✏️ Edit stock</button>
+      </div>
+    </header>
+    <div id="banner-edit"    class="banner banner-edit"    style="display:none;">✏️ Edit mode — update quantities, then save.</div>
+    <div id="banner-success" class="banner banner-success" style="display:none;"></div>
+    <div id="banner-error"   class="banner banner-error"   style="display:none;"></div>
+    <div id="banner-loading" class="banner banner-info"    style="display:none;"><span class="spinner"></span><span id="loading-msg">Loading…</span></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38%">Item</th>
+            <th style="width:14%">In office</th>
+            <th style="width:30%">Last activity</th>
+            <th style="width:18%"></th>
+          </tr>
+        </thead>
+        <tbody id="inv-body"></tbody>
+      </table>
+    </div>
+    <div id="save-row" class="save-row" style="display:none;">
+      <button onclick="cancelEdit()">Cancel</button>
+      <button class="btn-primary" onclick="saveEdits()">💾 Save stock counts</button>
+    </div>
+    <div class="log-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+        <button class="log-toggle" id="log-toggle" onclick="toggleLog()">Show activity log</button>
+        <span id="bottom-hint" style="font-size:12px;color:var(--muted);">Check out or return items using the row buttons</span>
+      </div>
+      <div id="log-list" style="display:none;"></div>
+    </div>
+  </div>
+</div>
 
-const SHEET_ID = '1OG50GvW3_mNpqks82zPdRyrd4ONU4qmAJkthsActzzI';
-const INVENTORY_SHEET = 'Inventory';
-const LOG_SHEET = 'Checkout Log';
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modal-title">Action <span id="modal-type-badge" class="modal-type-badge"></span></h3>
+    <div class="field"><label>Your name</label><input type="text" id="m-who" placeholder="e.g. Tess"></div>
+    <div class="field"><label>Quantity</label><input type="number" id="m-qty" min="1" value="1"></div>
+    <div class="field"><label>Date</label><input type="date" id="m-date"></div>
+    <div class="field"><label>Note (optional)</label><input type="text" id="m-note" placeholder="e.g. returned from campus event"></div>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" id="modal-confirm-btn" onclick="confirmAction()">Confirm</button>
+    </div>
+  </div>
+</div>
 
-// Default items seeded from your original spreadsheet
-const DEFAULT_ITEMS = [
-  { id: 1,  cat: 'Materials',    name: 'Tablecloth',               qty: 1   },
-  { id: 2,  cat: 'Materials',    name: 'Big banner – made to do',  qty: 1   },
-  { id: 3,  cat: 'Materials',    name: 'Big banner – Faces',       qty: 1   },
-  { id: 4,  cat: 'Materials',    name: 'Big banner – 3 Programs',  qty: 0   },
-  { id: 5,  cat: 'Materials',    name: 'Table banner',             qty: 4   },
-  { id: 6,  cat: 'Materials',    name: 'Waterbottles',             qty: 3   },
-  { id: 7,  cat: 'Materials',    name: 'Totes',                    qty: 83  },
-  { id: 8,  cat: 'Materials',    name: 'Big Flag',                 qty: 8   },
-  { id: 9,  cat: 'Materials',    name: 'Little Flag',              qty: 58  },
-  { id: 10, cat: 'Materials',    name: 'Folders',                  qty: 37  },
-  { id: 11, cat: 'Materials',    name: 'Lanyards',                 qty: 15  },
-  { id: 12, cat: 'Materials',    name: 'Pens',                     qty: 139 },
-  { id: 13, cat: 'Materials',    name: 'Notebooks',                qty: 2   },
-  { id: 14, cat: 'Pamphlets',    name: 'BBA',                      qty: 174 },
-  { id: 15, cat: 'Pamphlets',    name: 'PEP',                      qty: 212 },
-  { id: 16, cat: 'Pamphlets',    name: 'ENTRE',                    qty: 179 },
-  { id: 17, cat: 'Pamphlets',    name: 'CS',                       qty: 180 },
-  { id: 18, cat: 'UG Brochures', name: 'UG Brochures',             qty: 203 },
-];
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbkeWlXw1QFEi_L3dqxxTzyMPa7WEMHoqly_mDbsQRvCntabD8KGyQYTQfUzs0BLA/exec';
+let items=[], log=[], activeCategory='All', editMode=false, logVisible=false;
+let modalItemId=null, modalMode=null;
+let pendingAction=null, undoTimer=null, undoCountdown=null;
 
-// ── Entry points ─────────────────────────────────────────────
+function init() {
+  document.getElementById('main-screen').style.display='block';
+  loadData();
+}
 
-function doGet(e) {
-  const action = e.parameter.action;
+async function api(params) {
+  const res = await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});
+  return res.json();
+}
+
+async function loadData() {
+  showBanner('loading','Loading inventory…');
   try {
-    if (action === 'getItems')    return jsonResponse(getItems());
-    if (action === 'getLog')      return jsonResponse(getLog());
-    return jsonResponse({ error: 'Unknown action' });
-  } catch (err) {
-    return jsonResponse({ error: err.message });
+    const [ir,lr] = await Promise.all([api({action:'getItems'}),api({action:'getLog'})]);
+    items=ir.items||[]; log=lr.log||[];
+    hideBanner('loading');
+    document.getElementById('last-updated').textContent='Last refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    buildTabs(); render();
+    if(logVisible) renderLog();
+  } catch(e) {
+    hideBanner('loading');
+    showBanner('error','Could not load data. Check your connection and try refreshing.');
   }
 }
 
-function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
-  const action = data.action;
-  try {
-    if (action === 'checkout')    return jsonResponse(logCheckout(data));
-    if (action === 'returnItem')  return jsonResponse(logReturn(data));
-    if (action === 'updateStock') return jsonResponse(updateStock(data));
-    return jsonResponse({ error: 'Unknown action' });
-  } catch (err) {
-    return jsonResponse({ error: err.message });
-  }
+function showBanner(name,msg) {
+  const el=document.getElementById('banner-'+name);
+  if(msg) el.innerHTML=(name==='loading'?'<span class="spinner"></span>':'')+msg;
+  el.style.display='flex';
+}
+function hideBanner(name){document.getElementById('banner-'+name).style.display='none';}
+
+function buildTabs() {
+  const cats=['All',...new Set(items.map(i=>i.cat))];
+  document.getElementById('tabs').innerHTML=cats.map(c=>
+    `<button class="tab${c===activeCategory?' active':''}" onclick="setTab('${c}')">${c}</button>`
+  ).join('');
+}
+function setTab(c){activeCategory=c;buildTabs();render();}
+
+function getLastActivity(id) {
+  const item=items.find(i=>i.id==id);
+  const e=log.find(l=>l.itemName==item?.name);
+  if(!e) return '—';
+  const verb=e.type==='return'?'returned':'took';
+  return `${e.who} ${verb} ×${e.qty} on ${e.date}`;
 }
 
-// ── Sheet helpers ─────────────────────────────────────────────
-
-function getOrCreateSheet(name, headers) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  let sheet = ss.getSheetByName(name);
-  if (!sheet) {
-    sheet = ss.insertSheet(name);
-    sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length)
-         .setFontWeight('bold')
-         .setBackground('#f3f3f3');
-  }
-  return sheet;
+function render() {
+  const q=document.getElementById('search').value.toLowerCase();
+  const filtered=items.filter(i=>(activeCategory==='All'||i.cat===activeCategory)&&(!q||i.name.toLowerCase().includes(q)));
+  const tbody=document.getElementById('inv-body');
+  if(!filtered.length){tbody.innerHTML=`<tr><td colspan="4" class="empty">No items found.</td></tr>`;return;}
+  tbody.innerHTML=filtered.map(item=>{
+    const bc=item.qty==0?'badge-zero':item.qty<=5?'badge-low':'badge-ok';
+    const dc=item.qty==0?'dot-zero':item.qty<=5?'dot-low':'dot-ok';
+    const qtyCell=editMode
+      ?`<input class="qty-input" type="number" min="0" value="${item.qty}" data-id="${item.id}">`
+      :`<span class="badge ${bc}">${item.qty}</span>`;
+    const actionCell=editMode?'':
+      `<div class="action-cell">
+        <button class="btn-co" onclick="openModal(${item.id},'checkout')">Check out</button>
+        <button class="btn-ret" onclick="openModal(${item.id},'return')">Return</button>
+      </div>`;
+    return `<tr>
+      <td data-label="Item"><span class="dot ${dc}"></span>${item.name}</td>
+      <td data-label="In office">${qtyCell}</td>
+      <td data-label="Last activity" style="color:var(--muted);font-size:12px;">${getLastActivity(item.id)}</td>
+      <td>${actionCell}</td>
+    </tr>`;
+  }).join('');
 }
 
-function seedInventoryIfEmpty(sheet) {
-  if (sheet.getLastRow() <= 1) {
-    DEFAULT_ITEMS.forEach(item => {
-      sheet.appendRow([item.id, item.cat, item.name, item.qty]);
-    });
-  }
+function toggleEdit() {
+  editMode=true;
+  showBanner('edit','✏️ Edit mode — update quantities, then save.');
+  hideBanner('success');
+  document.getElementById('save-row').style.display='flex';
+  document.getElementById('edit-btn').style.display='none';
+  document.getElementById('bottom-hint').style.display='none';
+  render();
 }
-
-// ── Actions ───────────────────────────────────────────────────
-
-function getItems() {
-  const sheet = getOrCreateSheet(INVENTORY_SHEET, ['ID', 'Category', 'Name', 'Qty']);
-  seedInventoryIfEmpty(sheet);
-  const rows = sheet.getDataRange().getValues();
-  const items = rows.slice(1).map(r => ({
-    id:   r[0],
-    cat:  r[1],
-    name: r[2],
-    qty:  r[3],
-  }));
-  return { items };
+function cancelEdit() {
+  editMode=false; hideBanner('edit');
+  document.getElementById('save-row').style.display='none';
+  document.getElementById('edit-btn').style.display='';
+  document.getElementById('bottom-hint').style.display='';
+  render();
 }
-
-function getLog() {
-  const sheet = getOrCreateSheet(LOG_SHEET, ['Timestamp', 'Item', 'Who', 'Qty', 'Date', 'Note']);
-  if (sheet.getLastRow() <= 1) return { log: [] };
-  const rows = sheet.getDataRange().getValues();
-  const log = rows.slice(1).reverse().map(r => ({
-    ts:       r[0],
-    itemName: r[1],
-    who:      r[2],
-    qty:      r[3],
-    date:     r[4],
-    note:     r[5],
-  }));
-  return { log };
-}
-
-function logCheckout(data) {
-  // Deduct from inventory
-  const invSheet = getOrCreateSheet(INVENTORY_SHEET, ['ID', 'Category', 'Name', 'Qty']);
-  const rows = invSheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] == data.itemId) {
-      const newQty = Math.max(0, rows[i][3] - data.qty);
-      invSheet.getRange(i + 1, 4).setValue(newQty);
-      break;
-    }
-  }
-  // Append to log
-  const logSheet = getOrCreateSheet(LOG_SHEET, ['Timestamp', 'Type', 'Item', 'Who', 'Qty', 'Date', 'Note']);
-  logSheet.appendRow([
-    new Date().toISOString(),
-    'CHECKOUT',
-    data.itemName,
-    data.who,
-    data.qty,
-    data.date,
-    data.note || '',
-  ]);
-  return { success: true };
-}
-
-function logReturn(data) {
-  // Add back to inventory
-  const invSheet = getOrCreateSheet(INVENTORY_SHEET, ['ID', 'Category', 'Name', 'Qty']);
-  const rows = invSheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] == data.itemId) {
-      const newQty = rows[i][3] + data.qty;
-      invSheet.getRange(i + 1, 4).setValue(newQty);
-      break;
-    }
-  }
-  // Append to log
-  const logSheet = getOrCreateSheet(LOG_SHEET, ['Timestamp', 'Type', 'Item', 'Who', 'Qty', 'Date', 'Note']);
-  logSheet.appendRow([
-    new Date().toISOString(),
-    'RETURN',
-    data.itemName,
-    data.who,
-    data.qty,
-    data.date,
-    data.note || '',
-  ]);
-  return { success: true };
-}
-  const sheet = getOrCreateSheet(INVENTORY_SHEET, ['ID', 'Category', 'Name', 'Qty']);
-  const rows = sheet.getDataRange().getValues();
-  data.updates.forEach(update => {
-    for (let i = 1; i < rows.length; i++) {
-      if (rows[i][0] == update.id) {
-        sheet.getRange(i + 1, 4).setValue(update.qty);
-        break;
-      }
-    }
+async function saveEdits() {
+  const updates=[];
+  document.querySelectorAll('.qty-input').forEach(input=>{
+    updates.push({id:parseInt(input.dataset.id),qty:Math.max(0,parseInt(input.value)||0)});
   });
-  return { success: true };
+  updates.forEach(u=>{const item=items.find(i=>i.id==u.id);if(item)item.qty=u.qty;});
+  cancelEdit();
+  showBanner('loading','Saving to Google Sheet…');
+  try {
+    await apiPost({action:'updateStock',updates});
+    hideBanner('loading');
+    showBanner('success','✓ Stock counts saved to Google Sheet.');
+    setTimeout(()=>hideBanner('success'),4000);
+    render();
+  } catch(e) {
+    hideBanner('loading');
+    showBanner('error','Save failed. Check your connection and try again.');
+  }
 }
 
-function jsonResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
+function openModal(id,mode) {
+  modalItemId=id; modalMode=mode;
+  const item=items.find(i=>i.id==id);
+  const isReturn=mode==='return';
+  document.getElementById('modal-title').childNodes[0].textContent=(isReturn?'Return: ':'Check out: ')+item.name+' ';
+  const badge=document.getElementById('modal-type-badge');
+  badge.textContent=isReturn?'Return':'Check out';
+  badge.className='modal-type-badge '+(isReturn?'badge-return':'badge-checkout');
+  document.getElementById('modal-confirm-btn').textContent=isReturn?'Confirm return':'Confirm checkout';
+  document.getElementById('m-who').value='';
+  document.getElementById('m-qty').value=1;
+  document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('m-note').value='';
+  document.getElementById('overlay').classList.add('open');
 }
+function closeModal(){document.getElementById('overlay').classList.remove('open');modalItemId=null;modalMode=null;}
+
+async function confirmAction() {
+  const who=document.getElementById('m-who').value.trim();
+  const qty=parseInt(document.getElementById('m-qty').value);
+  const date=document.getElementById('m-date').value;
+  const note=document.getElementById('m-note').value.trim();
+  if(!who||!qty||qty<1||!date){alert('Please fill in name, quantity and date.');return;}
+  const item=items.find(i=>i.id==modalItemId);
+  const isReturn=modalMode==='return';
+  const prevQty=item.qty;
+  item.qty=isReturn?item.qty+qty:Math.max(0,item.qty-qty);
+  const entry={itemName:item.name,who,qty,date,note,type:modalMode,ts:new Date().toISOString()};
+  log.unshift(entry);
+  pendingAction={itemId:item.id,itemName:item.name,who,qty,date,note,type:modalMode,prevQty};
+  closeModal(); render();
+  if(logVisible) renderLog();
+  startUndoTimer(isReturn);
+}
+
+function startUndoTimer(isReturn) {
+  let secs=8;
+  clearTimeout(undoTimer); clearInterval(undoCountdown);
+  document.getElementById('undo-top-btn').style.display='';
+  const label=isReturn?'Return':'Checkout';
+  const showMsg=()=>showBanner('success',`✓ ${label} logged — <button onclick="undoAction()" style="margin-left:4px;padding:2px 10px;font-size:12px;border:1px solid #d97706;color:#92400e;background:#fff;border-radius:6px;cursor:pointer;">Undo (${secs}s)</button>`);
+  showMsg();
+  undoCountdown=setInterval(()=>{secs--;if(secs>0)showMsg();else clearInterval(undoCountdown);},1000);
+  undoTimer=setTimeout(()=>{
+    clearInterval(undoCountdown);
+    hideBanner('success');
+    document.getElementById('undo-top-btn').style.display='none';
+    commitAction();
+  },8000);
+}
+
+function undoAction() {
+  clearTimeout(undoTimer); clearInterval(undoCountdown);
+  hideBanner('success');
+  document.getElementById('undo-top-btn').style.display='none';
+  if(!pendingAction) return;
+  const item=items.find(i=>i.id==pendingAction.itemId);
+  if(item) item.qty=pendingAction.prevQty;
+  log.shift();
+  pendingAction=null;
+  render();
+  if(logVisible) renderLog();
+  showBanner('success','↩ Action undone.');
+  setTimeout(()=>hideBanner('success'),3000);
+}
+
+async function commitAction() {
+  if(!pendingAction) return;
+  const a=pendingAction; pendingAction=null;
+  try {
+    await apiPost({action:a.type==='return'?'returnItem':'checkout',itemId:a.itemId,itemName:a.itemName,who:a.who,qty:a.qty,date:a.date,note:a.note});
+  } catch(e) {
+    showBanner('error','Failed to sync to Google Sheet. Refresh to retry.');
+  }
+}
+
+function toggleLog() {
+  logVisible=!logVisible;
+  document.getElementById('log-toggle').textContent=logVisible?'Hide activity log':'Show activity log';
+  document.getElementById('log-list').style.display=logVisible?'block':'none';
+  if(logVisible) renderLog();
+}
+function renderLog() {
+  const el=document.getElementById('log-list');
+  if(!log.length){el.innerHTML=`<div class="card"><div class="empty">No activity recorded yet.</div></div>`;return;}
+  el.innerHTML=`<div class="card" style="margin-top:8px;">${
+    log.map(e=>{
+      const isReturn=e.type==='return';
+      return `<div class="log-entry">
+        <span class="log-type ${isReturn?'log-type-in':'log-type-out'}">${isReturn?'IN':'OUT'}</span>
+        <span class="log-who">${e.who}</span>
+        <span class="log-item">${isReturn?'returned':'took'} ×${e.qty} ${e.itemName}</span>
+        ${e.note?`<span class="log-note">– ${e.note}</span>`:''}
+        <span class="log-date">${e.date}</span>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+init();
+</script>
+</body>
+</html>
